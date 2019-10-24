@@ -63,6 +63,42 @@ describe('LinkedList', () => {
     verify(linkedList, 5, 3, 6, '5,1,4,2,3,3');
   });
 
+  it('should delete node by value from linked list', () => {
+    const linkedList = new LinkedList();
+
+    expect(linkedList.delete(v => v === 5)).toBeNull();
+
+    linkedList.append(1);
+    linkedList.append(1);
+    linkedList.append(2);
+    linkedList.append(3);
+    linkedList.append(3);
+    linkedList.append(3);
+    linkedList.append(4);
+    linkedList.append(5);
+
+    verify(linkedList, 1, 5, 8, '1,1,2,3,3,3,4,5');
+
+    const deletedNode = linkedList.delete(v => v === 3);
+    expect(deletedNode.data).toBe(3);
+    verify(linkedList, 1, 5, 5, '1,1,2,4,5');
+
+    expect(linkedList.delete(v => v === 3)).toBeNull();
+    verify(linkedList, 1, 5, 5, '1,1,2,4,5');
+
+    linkedList.delete(v => v === 1);
+    verify(linkedList, 2, 5, 3, '2,4,5');
+
+    linkedList.delete(v => v === 5);
+    verify(linkedList, 2, 4, 2, '2,4');
+
+    linkedList.delete(v => v === 4);
+    verify(linkedList, 2, 2, 1, '2');
+
+    linkedList.delete(v => v === 2);
+    expect(linkedList.toString()).toBe('');
+  });
+
   it('should delete node by index', () => {
     const linkedList = new LinkedList();
 

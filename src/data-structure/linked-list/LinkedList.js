@@ -9,19 +9,23 @@ export default class LinkedList {
   prepend(value) {
     const node = new LinkedListNode(value, this.head);
     this.head = node;
+
     if (!this.tail) {
       this.tail = node;
     }
+
     return this;
   }
 
   append(value) {
     const node = new LinkedListNode(value, null);
+
     if (!this.tail) {
       this.head = node;
       this.tail = node;
       return this;
     }
+
     this.tail.next = node;
     this.tail = node;
     return this;
@@ -29,9 +33,11 @@ export default class LinkedList {
 
   get(index) {
     if (index < 0) throw new Error('err.indexInvalid');
+
     if (!this.head) {
       return null;
     }
+
     let i = 0;
     let node = this.head;
     while (node) {
@@ -39,23 +45,61 @@ export default class LinkedList {
       node = node.next;
       i += 1;
     }
+
     return null;
   }
 
   insert(value, index) {
     if (index < 0) throw new Error('err.indexInvalid');
+
     if (!index) return this.prepend(value);
+
     const prev = this.get(index - 1);
     if (!prev) return this;
+
     const node = new LinkedListNode(value, prev.next);
     prev.next = node;
+
     if (!node.next) this.tail = node;
+
     return this;
+  }
+
+  delete(cb) {
+    if (typeof cb !== 'function') throw new Error('err.cbInvalid');
+
+    if (!this.head) return null;
+
+    let deletedNode = null;
+    while (this.head && cb(this.head.data)) {
+      deletedNode = this.head;
+      this.head = this.head.next;
+    }
+
+    let node = this.head;
+    if (node) {
+      while (node.next) {
+        if (cb(node.next.data)) {
+          deletedNode = node.next;
+          node.next = node.next.next;
+        } else {
+          node = node.next;
+        }
+      }
+    }
+
+    if (cb(this.tail.data)) {
+      this.tail = node;
+    }
+
+    return deletedNode;
   }
 
   deleteIndex(index) {
     if (index < 0) throw new Error('err.indexInvalid');
+
     if (!index) return this.deleteHead();
+
     const prev = this.get(index - 1);
     if (prev && prev.next) {
       const deleted = prev.next;
@@ -63,27 +107,32 @@ export default class LinkedList {
       if (!prev.next) this.tail = prev;
       return deleted;
     }
+
     return null;
   }
 
   deleteHead() {
     const deletedHead = this.head;
+
     if (this.head === this.tail) {
       this.head = null;
       this.tail = null;
       return deletedHead;
     }
     this.head = this.head.next;
+
     return deletedHead;
   }
 
   deleteTail() {
     const deletedTail = this.tail;
+
     if (this.head === this.tail) {
       this.head = null;
       this.tail = null;
       return deletedTail;
     }
+
     let node = this.head;
     while (node) {
       if (!node.next.next) {
@@ -92,29 +141,36 @@ export default class LinkedList {
       }
       node = node.next;
     }
+
     this.tail = node;
+
     return deletedTail;
   }
 
   deleteAll() {
     this.head = null;
     this.tail = null;
+
     return this;
   }
 
   fromArray(values) {
     if (!Array.isArray(values)) throw new Error('err.valuesInvalid');
+
     values.forEach(v => this.append(v));
+
     return this;
   }
 
   toArray() {
     const values = [];
+
     let node = this.head;
     while (node) {
       values.push(node);
       node = node.next;
     }
+
     return values;
   }
 
@@ -124,11 +180,13 @@ export default class LinkedList {
 
   size() {
     let count = 0;
+
     let node = this.head;
     while (node) {
       count += 1;
       node = node.next;
     }
+
     return count;
   }
 
@@ -136,6 +194,7 @@ export default class LinkedList {
     let prev = null;
     let curr = this.head;
     let next;
+
     while (curr) {
       // eslint-disable-next-line prefer-destructuring
       next = curr.next;
@@ -143,23 +202,28 @@ export default class LinkedList {
       prev = curr;
       curr = next;
     }
+
     this.tail = this.head;
     this.head = prev;
+
     return this;
   }
 
   find(cb) {
     if (typeof cb !== 'function') throw new Error('err.cbInvalid');
+
     let node = this.head;
     while (node) {
       if (cb(node.data)) return node;
       node = node.next;
     }
+
     return null;
   }
 
   findIndex(cb) {
     if (typeof cb !== 'function') throw new Error('err.cbInvalid');
+
     let i = 0;
     let node = this.head;
     while (node) {
@@ -167,6 +231,7 @@ export default class LinkedList {
       node = node.next;
       i += 1;
     }
+
     return -1;
   }
 }
