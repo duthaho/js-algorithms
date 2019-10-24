@@ -3,4 +3,8 @@ export default class LinkedListNode {
     this.data = data;
     this.next = next;
   }
+
+  toString(cb) {
+    return cb ? cb(this.data) : `${this.data}`;
+  }
 }
