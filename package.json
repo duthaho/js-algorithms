@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "watch": "jest --watch",
+    "coverage": "jest --coverage && open-cli coverage/lcov-report/index.html"
   },
   "keywords": [
     "algorithms"
@@ -22,6 +24,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.14.2",
     "husky": "^2.5.0",
-    "jest": "^24.9.0"
+    "jest": "^24.9.0",
+    "open-cli": "^5.0.0"
   }
 }

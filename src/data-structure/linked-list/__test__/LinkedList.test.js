@@ -4,7 +4,7 @@ const verify = (list, head, tail, size, str) => {
   expect(list.head.data).toBe(head);
   expect(list.tail.data).toBe(tail);
   expect(list.tail.next).toBeNull();
-  expect(list.size()).toBe(size);
+  expect(list.length).toBe(size);
   expect(list.toString()).toBe(str);
 };
 
@@ -14,6 +14,7 @@ describe('LinkedList', () => {
 
     expect(linkedList.head).toBeNull();
     expect(linkedList.tail).toBeNull();
+    expect(linkedList.length).toBe(0);
     expect(linkedList.toString()).toBe('');
   });
 
@@ -40,6 +41,8 @@ describe('LinkedList', () => {
   it('should get node by index', () => {
     const linkedList = new LinkedList();
 
+    expect(linkedList.get(0)).toBeNull();
+
     linkedList.fromArray([1, 2, 3]);
     verify(linkedList, 1, 3, 3, '1,2,3');
 
@@ -59,11 +62,12 @@ describe('LinkedList', () => {
     linkedList.insert(5, 0);
     linkedList.insert(4, 2);
     linkedList.insert(3, 4);
+    linkedList.insert(1, 6);
     linkedList.insert(5, 100);
-    verify(linkedList, 5, 3, 6, '5,1,4,2,3,3');
+    verify(linkedList, 5, 1, 7, '5,1,4,2,3,3,1');
   });
 
-  it('should delete node by value from linked list', () => {
+  it('should delete node by callback', () => {
     const linkedList = new LinkedList();
 
     expect(linkedList.delete(v => v === 5)).toBeNull();
@@ -78,6 +82,8 @@ describe('LinkedList', () => {
     linkedList.append(5);
 
     verify(linkedList, 1, 5, 8, '1,1,2,3,3,3,4,5');
+
+    expect(linkedList.delete('notFunction')).toBeNull();
 
     const deletedNode = linkedList.delete(v => v === 3);
     expect(deletedNode.data).toBe(3);
@@ -149,7 +155,10 @@ describe('LinkedList', () => {
     expect(deletedNode3.data).toBe(1);
     expect(linkedList.head).toBeNull();
     expect(linkedList.tail).toBeNull();
+    expect(linkedList.length).toBe(0);
     expect(linkedList.toString()).toBe('');
+
+    expect(linkedList.deleteTail()).toBeNull();
   });
 
   it('should delete linked list head', () => {
@@ -170,6 +179,7 @@ describe('LinkedList', () => {
     expect(deletedNode2.data).toBe(2);
     expect(linkedList.head).toBeNull();
     expect(linkedList.tail).toBeNull();
+    expect(linkedList.length).toBe(0);
     expect(linkedList.toString()).toBe('');
   });
 
@@ -180,16 +190,16 @@ describe('LinkedList', () => {
 
     linkedList.append(1);
     linkedList.append(2);
-
     verify(linkedList, 1, 2, 2, '1,2');
 
     linkedList.deleteAll();
     expect(linkedList.head).toBeNull();
     expect(linkedList.tail).toBeNull();
+    expect(linkedList.length).toBe(0);
     expect(linkedList.toString()).toBe('');
   });
 
-  it('should be possible to store objects in the list and to print them out', () => {
+  it('to string should work', () => {
     const linkedList = new LinkedList();
 
     const nodeValue1 = { value: 1, key: 'key1' };
@@ -204,9 +214,10 @@ describe('LinkedList', () => {
     expect(linkedList.toString(cb)).toBe('key2:2,key1:1');
   });
 
-  it('should find node by value', () => {
+  it('should find node by callback', () => {
     const linkedList = new LinkedList();
 
+    expect(linkedList.find('notFunction')).toBe(null);
     expect(linkedList.find(v => v === 5)).toBeNull();
 
     linkedList.append(1);
@@ -232,9 +243,10 @@ describe('LinkedList', () => {
     expect(linkedList.find(v => v.key === 'test5')).toBeNull();
   });
 
-  it('should find node by index', () => {
+  it('should find index by callback', () => {
     const linkedList = new LinkedList();
 
+    expect(linkedList.findIndex('notFunction')).toBe(-1);
     expect(linkedList.findIndex(v => v === 5)).toBe(-1);
 
     linkedList.append(1);
@@ -278,5 +290,29 @@ describe('LinkedList', () => {
 
     linkedList.reverse();
     verify(linkedList, 1, 3, 3, '1,2,3');
+  });
+
+  it('to array should returns array', () => {
+    const linkedList = new LinkedList();
+
+    linkedList
+      .prepend(1)
+      .append(2)
+      .insert(0, 0);
+
+    expect(linkedList.toArray().join(',')).toEqual('0,1,2');
+  });
+
+  it('should import from array', () => {
+    const linkedList = new LinkedList();
+
+    linkedList.fromArray(1);
+    expect(linkedList.head).toBeNull();
+    expect(linkedList.tail).toBeNull();
+    expect(linkedList.length).toBe(0);
+    expect(linkedList.toString()).toBe('');
+
+    linkedList.fromArray([1]);
+    verify(linkedList, 1, 1, 1, '1');
   });
 });

@@ -4,6 +4,11 @@ export default class LinkedList {
   constructor() {
     this.head = null;
     this.tail = null;
+    this.size = 0;
+  }
+
+  get length() {
+    return this.size;
   }
 
   prepend(value) {
@@ -14,6 +19,8 @@ export default class LinkedList {
       this.tail = node;
     }
 
+    this.size += 1;
+
     return this;
   }
 
@@ -23,50 +30,46 @@ export default class LinkedList {
     if (!this.tail) {
       this.head = node;
       this.tail = node;
-      return this;
+    } else {
+      this.tail.next = node;
+      this.tail = node;
     }
 
-    this.tail.next = node;
-    this.tail = node;
+    this.size += 1;
+
     return this;
   }
 
   get(index) {
-    if (index < 0) throw new Error('err.indexInvalid');
-
-    if (!this.head) {
-      return null;
-    }
+    if (index < 0 || index >= this.size) return null;
 
     let i = 0;
     let node = this.head;
     while (node) {
-      if (i === index) return node;
+      if (i === index) break;
       node = node.next;
       i += 1;
     }
 
-    return null;
+    return node;
   }
 
   insert(value, index) {
-    if (index < 0) throw new Error('err.indexInvalid');
-
-    if (!index) return this.prepend(value);
+    if (index < 0 || index > this.size) return this;
+    if (index === 0) return this.prepend(value);
+    if (index === this.size) return this.append(value);
 
     const prev = this.get(index - 1);
-    if (!prev) return this;
-
     const node = new LinkedListNode(value, prev.next);
     prev.next = node;
 
-    if (!node.next) this.tail = node;
+    this.size += 1;
 
     return this;
   }
 
   delete(cb) {
-    if (typeof cb !== 'function') throw new Error('err.cbInvalid');
+    if (typeof cb !== 'function') return null;
 
     if (!this.head) return null;
 
@@ -74,6 +77,7 @@ export default class LinkedList {
     while (this.head && cb(this.head.data)) {
       deletedNode = this.head;
       this.head = this.head.next;
+      this.size -= 1;
     }
 
     let node = this.head;
@@ -82,6 +86,7 @@ export default class LinkedList {
         if (cb(node.next.data)) {
           deletedNode = node.next;
           node.next = node.next.next;
+          this.size -= 1;
         } else {
           node = node.next;
         }
@@ -96,53 +101,50 @@ export default class LinkedList {
   }
 
   deleteIndex(index) {
-    if (index < 0) throw new Error('err.indexInvalid');
-
-    if (!index) return this.deleteHead();
+    if (index < 0 || index >= this.size) return null;
+    if (index === 0) return this.deleteHead();
+    if (index === this.size - 1) return this.deleteTail();
 
     const prev = this.get(index - 1);
-    if (prev && prev.next) {
-      const deleted = prev.next;
-      prev.next = prev.next.next;
-      if (!prev.next) this.tail = prev;
-      return deleted;
-    }
+    const deletedNode = prev.next;
+    prev.next = prev.next.next;
 
-    return null;
+    this.size -= 1;
+
+    return deletedNode;
   }
 
   deleteHead() {
+    if (!this.head) return null;
+
     const deletedHead = this.head;
 
     if (this.head === this.tail) {
       this.head = null;
       this.tail = null;
-      return deletedHead;
+    } else {
+      this.head = this.head.next;
     }
-    this.head = this.head.next;
+
+    this.size -= 1;
 
     return deletedHead;
   }
 
   deleteTail() {
+    if (!this.tail) return null;
+
     const deletedTail = this.tail;
 
     if (this.head === this.tail) {
       this.head = null;
       this.tail = null;
-      return deletedTail;
+    } else {
+      this.tail = this.get(this.size - 2);
+      this.tail.next = null;
     }
 
-    let node = this.head;
-    while (node) {
-      if (!node.next.next) {
-        node.next = null;
-        break;
-      }
-      node = node.next;
-    }
-
-    this.tail = node;
+    this.size -= 1;
 
     return deletedTail;
   }
@@ -151,11 +153,13 @@ export default class LinkedList {
     this.head = null;
     this.tail = null;
 
+    this.size = 0;
+
     return this;
   }
 
   fromArray(values) {
-    if (!Array.isArray(values)) throw new Error('err.valuesInvalid');
+    if (!Array.isArray(values)) return this;
 
     values.forEach(v => this.append(v));
 
@@ -167,27 +171,27 @@ export default class LinkedList {
 
     let node = this.head;
     while (node) {
-      values.push(node);
+      values.push(node.data);
       node = node.next;
     }
 
     return values;
   }
 
-  toString(cb) {
-    return this.toArray().map(node => node.toString(cb)).toString();
-  }
-
-  size() {
-    let count = 0;
+  toNodes() {
+    const nodes = [];
 
     let node = this.head;
     while (node) {
-      count += 1;
+      nodes.push(node);
       node = node.next;
     }
 
-    return count;
+    return nodes;
+  }
+
+  toString(cb) {
+    return this.toNodes().map(node => node.toString(cb)).toString();
   }
 
   reverse() {
@@ -210,7 +214,7 @@ export default class LinkedList {
   }
 
   find(cb) {
-    if (typeof cb !== 'function') throw new Error('err.cbInvalid');
+    if (typeof cb !== 'function') return null;
 
     let node = this.head;
     while (node) {
@@ -222,7 +226,7 @@ export default class LinkedList {
   }
 
   findIndex(cb) {
-    if (typeof cb !== 'function') throw new Error('err.cbInvalid');
+    if (typeof cb !== 'function') return -1;
 
     let i = 0;
     let node = this.head;
