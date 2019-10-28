@@ -42,6 +42,8 @@ export default class LinkedList {
 
   get(index) {
     if (index < 0 || index >= this.size) return null;
+    if (index === 0) return this.head;
+    if (index === this.size - 1) return this.tail;
 
     let i = 0;
     let node = this.head;
