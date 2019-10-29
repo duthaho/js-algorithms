@@ -10,6 +10,7 @@
     "no-lonely-if": "off",
     "class-methods-use-this": "off",
     "arrow-body-style": "off",
-    "no-loop-func": "off"
+    "no-loop-func": "off",
+    "no-plusplus": "off"
   }
 }
